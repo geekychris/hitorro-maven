@@ -1,6 +1,8 @@
-# Hitorro Local Maven Repository
+# Hitorro Maven Repository
 
-This is a file-based Maven repository for Hitorro project artifacts.
+This is a GitHub-hosted Maven repository for Hitorro project artifacts.
+
+Artifacts are deployed to this repository and pushed to GitHub, allowing consumers to reference them directly via HTTPS without cloning the repository.
 
 ## Repository Structure
 
@@ -36,16 +38,36 @@ This will compile all modules and install them to this repository.
 
 To use artifacts from this repository in another Maven project, add the following to your `pom.xml`:
 
-### Option 1: Add to Project POM
+### Option 1: GitHub Repository (Recommended)
 
 Add this `<repositories>` section to your project's `pom.xml`:
 
 ```xml
 <repositories>
     <repository>
+        <id>hitorro-maven</id>
+        <name>Hitorro Maven Repository</name>
+        <url>https://raw.githubusercontent.com/geekychris/hitorro-maven/main</url>
+        <releases>
+            <enabled>true</enabled>
+        </releases>
+        <snapshots>
+            <enabled>true</enabled>
+        </snapshots>
+    </repository>
+</repositories>
+```
+
+### Option 2: Local File Repository (For local development)
+
+If you have this repository cloned locally:
+
+```xml
+<repositories>
+    <repository>
         <id>hitorro-local</id>
         <name>Hitorro Local Maven Repository</name>
-        <url>file:///Users/chris/code/hitorro-maven</url>
+        <url>file://${user.home}/code/hitorro-maven</url>
         <releases>
             <enabled>true</enabled>
         </releases>
@@ -74,7 +96,7 @@ Then add dependencies as normal:
 </dependencies>
 ```
 
-### Option 2: Add to Maven Settings (Global)
+### Option 3: Add to Maven Settings (Global)
 
 Alternatively, you can add this repository to your Maven settings file (`~/.m2/settings.xml`) to make it available to all projects:
 
@@ -82,12 +104,12 @@ Alternatively, you can add this repository to your Maven settings file (`~/.m2/s
 <settings>
     <profiles>
         <profile>
-            <id>hitorro-local-repo</id>
+            <id>hitorro-maven-repo</id>
             <repositories>
                 <repository>
-                    <id>hitorro-local</id>
-                    <name>Hitorro Local Maven Repository</name>
-                    <url>file:///Users/chris/code/hitorro-maven</url>
+                    <id>hitorro-maven</id>
+                    <name>Hitorro Maven Repository</name>
+                    <url>https://raw.githubusercontent.com/geekychris/hitorro-maven/main</url>
                     <releases>
                         <enabled>true</enabled>
                     </releases>
@@ -100,7 +122,7 @@ Alternatively, you can add this repository to your Maven settings file (`~/.m2/s
     </profiles>
     
     <activeProfiles>
-        <activeProfile>hitorro-local-repo</activeProfile>
+        <activeProfile>hitorro-maven-repo</activeProfile>
     </activeProfiles>
 </settings>
 ```
@@ -137,30 +159,38 @@ cd /Users/chris/hitorro
 mvn clean deploy
 ```
 
-## Git-Based Distribution
+## Deployment Process
 
-To share this repository with others via Git:
+This repository is automatically updated when deploying from the Hitorro project:
 
-1. **Push to a remote** (e.g., GitHub, GitLab):
+1. **Deploy artifacts** from the Hitorro project:
    ```bash
-   cd /Users/chris/code/hitorro-maven
-   git remote add origin <repository-url>
-   git push -u origin main
+   cd ~/hitorro
+   mvn clean deploy -DskipTests
    ```
 
-2. **Others can clone and use it**:
+2. **Commit and push** the deployed artifacts:
    ```bash
-   git clone <repository-url> ~/hitorro-maven
-   ```
+   cd ~/code/hitorro-maven
+   git add .
+   git commit -m "Deploy hitorro artifacts version X.Y.Z
    
-   Then reference it in their projects:
-   ```xml
-   <repository>
-       <id>hitorro-local</id>
-       <name>Hitorro Local Maven Repository</name>
-       <url>file:///${user.home}/hitorro-maven</url>
-   </repository>
+   Co-Authored-By: Warp <agent@warp.dev>"
+   git push
    ```
+
+3. **Artifacts are now available** at:
+   ```
+   https://raw.githubusercontent.com/geekychris/hitorro-maven/main
+   ```
+
+### Customizing Deployment Path
+
+The default deployment path is `${user.home}/code/hitorro-maven`. You can customize it:
+
+- **Command line**: `mvn deploy -Dhitorro.deploy.repo.path=/custom/path`
+- **POM property**: Edit `<hitorro.deploy.repo.path>` in the root `pom.xml`
+- **Maven settings**: Define the property in `~/.m2/settings.xml`
 
 ## Available Modules
 
