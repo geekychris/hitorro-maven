@@ -1,0 +1,15 @@
+# Maven metadata that gets regenerated
+*.md5
+*.sha1
+*.sha256
+*.sha512
+
+# IDE files
+.DS_Store
+.idea/
+*.iml
+
+# Keep the actual artifacts and POMs
+!*.jar
+!*.pom
+!maven-metadata.xml
