@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/logo.png" alt="Hitorro Maven logo" width="180">
+</p>
+
 # Hitorro Maven Repository
 
 This is a GitHub-hosted Maven repository for Hitorro project artifacts.
